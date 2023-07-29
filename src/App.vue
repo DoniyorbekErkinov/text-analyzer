@@ -1,26 +1,35 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div>
+    <input type="text" v-model="text" placeholder="Enter text to analyze" />
+    <button @click="analyzeText">Analyze</button>
+    <div v-if="sentiment">
+      <p>Negative: {{ sentiment.neg }}%</p>
+      <p>Neutral: {{ sentiment.neu }}%</p>
+      <p>Positive: {{ sentiment.pos }}%</p>
+    </div>
+  </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import axios from 'axios'
 
 export default {
-  name: 'App',
-  components: {
-    HelloWorld
+  data() {
+    return {
+      text: '',
+      sentiment: null
+    }
+  },
+  methods: {
+    analyzeText() {
+      axios.post('http://localhost:5000/api/analyze_text', { text: this.text })
+        .then(response => {
+          this.sentiment = response.data
+        })
+        .catch(error => {
+          console.error(error)
+        })
+    }
   }
 }
 </script>
-
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
